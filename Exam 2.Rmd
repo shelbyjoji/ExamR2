@@ -1,0 +1,118 @@
+---
+title: "Exam R2"
+author: "Shelby Joji"
+date: "October 9, 2018"
+output: word_document
+---
+
+
+## R Markdown
+
+
+```{r}
+library(readr)
+d1 <- read_csv("PROJECTDATA.csv")
+d2<-d1[,c('AGE','TG')]
+
+
+#Q2
+d3<-na.omit(d2)
+summary(d2)
+summary(d3)
+
+#Q3
+d3$NewAge<-round(d3$AGE, digits = 1)
+as.data.frame(table(d3$NewAge))
+
+#Q4
+d4<-with(d3,split(d3,NewAge))
+length(d4)
+d4<-na.omit(d4)
+
+```
+
+
+```{r}
+#Q5,6,7
+
+library(Matrix)   # ... for matrix operations
+library(car)      # ... for ellipse plots
+library(stats)    # ... for statistical operations
+library(MASS)     # ... for Multivariate Normal Distribution
+library(graphics) # ... for arrows
+
+mat<-matrix(NA,length(d4),1)
+mat
+
+for(i in 1:116){
+  df<-d4[[i]]
+  boxcox(df$TG~1)
+  p<-powerTransform(df$TG)    # Estimaton of Box-Cox lambda
+  df$NEWTG<- bcPower(df$TG, p$lambda)
+  d4[[i]]<-df
+  results<-shapiro.test(df$NEWTG)
+  mat[i,1]<-(results$p.value)
+} 
+
+colnames(mat)<-c('p-value')
+rownames(mat) <- c(1:116)
+mat 
+
+```
+
+Here it does not make any sense. 114 does not have any p value. I ran this individually just to see.
+```{r}
+df<-d4[[114]]
+df
+Box = boxcox(df$TG~1)             # Transform SBP as a single vector
+Cox = data.frame(Box$x, Box$y)        # Create a data frame with the results
+Cox2 = Cox[with(Cox, order(-Cox$Box.y)),] # Order the new data frame by decreasing y
+Cox2[1,]                                  # Display the lambda with the greatest
+#    log likelihood
+lambda = Cox2[1, "Box.x"]                 # Extract that lambda
+df$NEWTG = (df$TG ^ lambda - 1)/lambda 
+
+results<-shapiro.test(df$NEWTG)
+results$p.value
+
+mat[114,1]<-results$p.value
+
+```
+
+I get a valid p value here and I am able to make boxcox transformation. I do not understand why it does not do it in loop.
+But you cannot do 115 and 116 due to shapiro test requirements. 116 hasa one row, so you cannot even do boxcox
+
+```{r}
+
+df<-d4[[115]]
+df
+Box = boxcox(df$TG~1)             # Transform SBP as a single vector
+Cox = data.frame(Box$x, Box$y)        # Create a data frame with the results
+Cox2 = Cox[with(Cox, order(-Cox$Box.y)),] # Order the new data frame by decreasing y
+Cox2[1,]                                  # Display the lambda with the greatest
+#    log likelihood
+lambda = Cox2[1, "Box.x"]                 # Extract that lambda
+df$NEWTG = (df$TG ^ lambda - 1)/lambda 
+
+# shapiro test requirements are not met
+results<-shapiro.test(df$NEWTG)
+results$p.value
+
+
+df<-d4[[116]]
+df
+#error from here...
+Box = boxcox(df$TG~1)             # Transform SBP as a single vector
+Cox = data.frame(Box$x, Box$y)        # Create a data frame with the results
+Cox2 = Cox[with(Cox, order(-Cox$Box.y)),] # Order the new data frame by decreasing y
+Cox2[1,]                                  # Display the lambda with the greatest
+#    log likelihood
+lambda = Cox2[1, "Box.x"]                 # Extract that lambda
+df$NEWTG = (df$TG ^ lambda - 1)/lambda 
+
+# shapiro test requirements are not met
+results<-shapiro.test(df$NEWTG)
+results$p.value
+
+```
+

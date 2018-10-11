@@ -27,7 +27,6 @@ as.data.frame(table(d3$NewAge))
 #Q4
 d4<-with(d3,split(d3,NewAge))
 length(d4)
-d4<-na.omit(d4)
 
 ```
 
@@ -46,7 +45,6 @@ mat
 
 for(i in 1:116){
   df<-d4[[i]]
-  boxcox(df$TG~1)
   p<-powerTransform(df$TG)    # Estimaton of Box-Cox lambda
   df$NEWTG<- bcPower(df$TG, p$lambda)
   d4[[i]]<-df

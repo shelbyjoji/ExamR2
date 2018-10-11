@@ -114,3 +114,8 @@ results$p.value
 
 ```
 
+```{r}
+(lapply(d4, function(x) dim(x)))
+
+```
+

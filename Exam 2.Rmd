@@ -46,17 +46,14 @@ mat
 
 for(i in 1:length(d4)){
   df<-d4[[i]]
-  
   Box = boxcox(df$TG~1)             # Transform SBP as a single vector
   Cox = data.frame(Box$x, Box$y)        # Create a data frame with the results
   Cox2 = Cox[with(Cox, order(-Cox$Box.y)),] # Order the new data frame by decreasing y
-  Cox2[1,]                                  # Display the lambda with the greatest 
-                                            #log   likelihood
+  Cox2[1,]                                  # Display the lambda with the greatest
+#    log likelihood
   lambda = Cox2[1, "Box.x"]                 # Extract that lambda
   df$NEWTG = (df$TG ^ lambda - 1)/lambda 
-  
-  d4[[i]]<-df
-  
+
   results<-shapiro.test(df$NEWTG)
   mat[i,1]<-(results$p.value)
 } 
@@ -121,29 +118,14 @@ results$p.value
 
 ```
 
+Finding diamention
+
 ```{r}
 (lapply(d4, function(x) dim(x)))
 
 ```
 
-
-```{r}
-df<-d4[[114]]
-df
-Box = boxcox(df$TG~1)             # Transform SBP as a single vector
-Cox = data.frame(Box$x, Box$y)        # Create a data frame with the results
-Cox2 = Cox[with(Cox, order(-Cox$Box.y)),] # Order the new data frame by decreasing y
-Cox2[1,]                                  # Display the lambda with the greatest
-#    log likelihood
-lambda = Cox2[1, "Box.x"]                 # Extract that lambda
-df$NEWTG = (df$TG ^ lambda - 1)/lambda 
-
-results<-shapiro.test(df$NEWTG)
-results$p.value
-
-mat[114,1]<-results$p.value
-
-```
+I have removed d4[[116]] and d4[[115]] in the specified order. These split dataset does not meet shapiro test requirements.
 ```{r}
 
 d4[[116]]<-NULL
